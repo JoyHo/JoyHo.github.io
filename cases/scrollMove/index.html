@@ -210,11 +210,11 @@ var slide = {
         var that = this;
         var prevBtn = document.getElementById('prev'),
             nextBtn = document.getElementById('next');
-        prevBtn.addEventListener('touchstart', function(){
+        prevBtn.addEventListener('click', function(){
             that.prev();
         }, false);
 
-        nextBtn.addEventListener('touchstart', function(){
+        nextBtn.addEventListener('click', function(){
             that.next();
         }, false);
 
