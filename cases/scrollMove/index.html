@@ -137,10 +137,11 @@ var slide = {
         that.locked = true;//锁定
         if(that.count > 0 && that.count < (that.num+1)){
             that.move(dis);
-            setTimeout(function(){
+        }
+        setTimeout(function(){
                 that.locked = false; //解锁
             }, that.duration);
-        }
+
         //修正边界值
         if(that.count <= 0){
                 that.count = 1;
@@ -179,6 +180,7 @@ var slide = {
             es.preventDefault();
             var touch = es.touches[0];
             startX = touch.pageX;
+            totalDisX = -(that.count-1)*that.slideWidth;
         }, false);
 
         that.elem.addEventListener('touchmove', function(em){
@@ -189,7 +191,6 @@ var slide = {
             xOffset = endX - startX;
             dis = totalDisX + xOffset;
             if(Math.abs(xOffset) < that.slideWidth){
-
                 if(isMove()){
                     that.move(dis);
                 }
@@ -203,18 +204,17 @@ var slide = {
                 that[action]();
             }
             xOffset = 0;
-            totalDisX = -(that.count-1)*that.slideWidth;
         }, false);
     },
     bindEvent:function(){
         var that = this;
         var prevBtn = document.getElementById('prev'),
             nextBtn = document.getElementById('next');
-        prevBtn.addEventListener('click', function(){
+        prevBtn.addEventListener('touchstart', function(){
             that.prev();
         }, false);
 
-        nextBtn.addEventListener('click', function(){
+        nextBtn.addEventListener('touchstart', function(){
             that.next();
         }, false);
 
