@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <title>index</title>
+    <style type="text/css">
+        html,body,ul,li,a{
+            margin:0;
+            padding:0;
+        }
+        body{
+            position:absolute;
+            left:0;
+            top:0;
+            width:100%;
+            height:100%;
+        }
+        h1{
+            margin:10px;
+            text-align:center;
+        }
+        .scroll{
+            position:relative;
+            width:80%;
+            height:80%;
+            margin:10px auto 0;
+            overflow:hidden;
+        }
+        .left,.right{
+            position:absolute;
+            top:50%;
+            z-index:1;
+            margin-top:-10%;
+            width:10%;
+            height:20%;
+            font-size:70px;
+            color:#fff;
+            text-align:center;
+        }
+        .left{
+            left:0;
+        }
+        .right{
+            right:0;
+        }
+        .scroll ul{
+            display:box;
+            display: -webkit-box;
+            display: -moz-box;
+            display: -ms-box;
+            display: -o-box;
+            width:100%;
+            height:100%;
+        }
+        .scroll li{
+            width:100%;
+            height:100%;
+            list-style-type: none;
+        }
+        .scroll li:nth-child(1){
+            background:#63a35c;
+        }
+        .scroll li:nth-child(2){
+            background:#4078c0;
+        }
+        .scroll li:nth-child(3){
+            background:#e5e5e5;
+        }
+        .scroll li:nth-child(4){
+            background:#677c89;
+        }
+        .scroll li:nth-child(5){
+            background:#80c200;
+        }
+        .scroll li:nth-child(6){
+            background:#9731FB;
+        }
+        
+    </style>
+</head>
+<body>
+<h1>滑动轮播</h1>
+<div id="scroll" class="scroll">
+    <div id="prev" class="left">&lt;</div>
+    <div id="next" class="right">&gt;</div>
+    <ul id="content">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+</div>
+<script type="text/javascript">
+//判断是否火狐,火狐的兼容性不太一样
+function isFireFox(){
+    var ua = window.navigator.userAgent.toLowerCase();
+    if(ua.indexOf('firefox') >= 0){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+var slide = {
+    init:function(){
+        var that = this;
+        that.elem = document.getElementById('content');
+        that.num = that.elem.children.length;
+        that.slideWidth = that.elem.children[0].offsetWidth;
+        that.count = 1;
+        that.duration = '0.2s';
+    },
+    move:function(dis){
+        var that = this,
+            style = '';
+        
+        if (isFireFox()) {
+            style = '-moz-transition:'+'all '+ that.duration +' linear;' + '-moz-transform:'+'translate3d(' + dis + 'px,0,0);';
+        }
+        else {
+            style = '-webkit-transition:'+'all '+ that.duration +' linear;' + '-webkit-transform:'+'translate3d(' + dis + 'px,0,0);';
+        }
+        
+        that.elem.setAttribute('style', style)
+    },
+    goto:function(count){
+        var that = this, dis;
+        that.count = count || that.count || 1;
+
+        dis = -that.slideWidth*(that.count-1);
+
+        that.locked = true;//锁定
+        if(that.count > 0 && that.count < (that.num+1)){
+            that.move(dis);
+            setTimeout(function(){
+                that.locked = false; //解锁
+            }, that.duration);
+        }
+        //修正边界值
+        if(that.count <= 0){
+                that.count = 1;
+        }
+        if(that.count > that.num){
+            that.count = that.num;
+        }
+
+    },
+    prev:function(){
+        var that = this;
+        if(that.locked)  return;
+        that.count--;
+        that.goto(that.count);
+    },
+    next:function(){
+        var that = this;
+        if(that.locked)  return;
+        that.count++;
+        that.goto(that.count);
+    },
+    touchEvent:function(){
+        var that = this;
+        var startX = 0, endX = 0, xOffset = 0, totalDisX = 0;
+
+        that.onOffDis = 20;//滑动开关控制，小于这个阈值则不进行prev或next操作
+
+        //判断是否移动，是指第一张和最后一张是否需要进行移动操作
+        function isMove(){
+            var lastMove = ((that.count >= that.num) && (xOffset < 0)),
+                    firstMove = ((that.count <= 1) && (xOffset >= 0));
+            return (!lastMove && !firstMove);
+        }
+
+        that.elem.addEventListener('touchstart', function(es){
+            es.preventDefault();
+            var touch = es.touches[0];
+            startX = touch.pageX;
+        }, false);
+
+        that.elem.addEventListener('touchmove', function(em){
+            em.preventDefault();
+            var touch = em.touches[0],
+                dis = 0;
+            endX = touch.pageX;
+            xOffset = endX - startX;
+            dis = totalDisX + xOffset;
+            if(Math.abs(xOffset) < that.slideWidth){
+
+                if(isMove()){
+                    that.move(dis);
+                }
+            }
+        }, false);
+
+        that.elem.addEventListener('touchend', function(ee){
+            ee.preventDefault();
+            if(Math.abs(xOffset) >= that.onOffDis && isMove()){
+                var action = xOffset > 0 ? 'prev' : 'next';
+                that[action]();
+            }
+            xOffset = 0;
+            totalDisX = -(that.count-1)*that.slideWidth;
+        }, false);
+    },
+    bindEvent:function(){
+        var that = this;
+        var prevBtn = document.getElementById('prev'),
+            nextBtn = document.getElementById('next');
+        prevBtn.addEventListener('click', function(){
+            that.prev();
+        }, false);
+
+        nextBtn.addEventListener('click', function(){
+            that.next();
+        }, false);
+
+        //绑定touch事件
+        that.touchEvent();
+    }
+}
+
+window.onload = function(){
+    slide.init();
+    slide.bindEvent();
+}
+</script>
+</body>
+</html>
