@@ -102,15 +102,17 @@ var folding = {
 		setTimeout(function(){
 			that.rightSide.classList.toggle('hover-right');
 			that.order.push(that.rightSide);
+			that.open = false;
 		},that.duration);
 	},
 	//打开动作
 	openAction:function(){
-		var that = this;
+		var that = this; 
 		if(that.order.length > 0){
 			that.order.pop().classList.toggle('hover-right');
 			setTimeout(function(){
 				that.order.pop().classList.toggle('hover-left');
+				that.open = true;
 			},that.duration);
 		}
 	},
