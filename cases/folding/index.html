@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Cache-Control" content="no-cache">
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+	<title>3D折叠效果</title>
+	<style type="text/css">
+	body,html,div{
+		padding:0;
+		margin:0;
+	}
+	body{
+		background:#7ca097;
+	}
+	.wrap{
+		width:116px;
+		height:90px;
+		margin:150px auto 0;
+		background:#fff;
+	}
+	.box{
+		position:relative;
+		height:90px;
+		perspective: 500px;
+		-webkit-perspective: 500px;
+		transform-style:preserve-3d;
+		-webkit-transform-style:preserve-3d;
+	}
+	.box div{
+		position:absolute;
+		top:0;
+		width:116px;
+		height:90px;
+	}
+	.center{
+		width:116px;
+		box-shadow: 0 0 4px rgba(88,88,88,.8);
+	}
+	.left,
+	.right{
+		transform-style:preserve-3d;
+		-webkit-transform-style:preserve-3d;
+		transition:.8s all ease;
+		-webkit-transition:.8s all ease;
+	}
+	.left{
+		right:116px;
+		background:#fff;
+		border-right:1px dashed #7c9f96;
+		border-radius:6px 0 0 6px;
+		box-shadow:-2px 0 2px rgba(88,88,88,.7);
+		transform-origin:right;
+		-webkit-transform-origin:right;
+	}
+	.right{
+		left:116px;
+		background:#fff;
+		border-left:1px dashed #7c9f96;
+		border-radius:0 6px 6px 0;
+		box-shadow:2px 0 2px rgba(88,88,88,.7);
+		transform-origin:left;
+		-webkit-transform-origin:left;
+	}
+	/* 动作 */
+	.hover-left{
+		transform:rotateY(180deg);
+		-webkit-transform:rotateY(180deg);
+	}
+	.hover-right{
+		transform:rotateY(-180deg);
+		-webkit-transform:rotateY(-180deg);
+	}
+	</style>
+</head>
+<body>
+<div class="wrap">
+	<div id="box" class="box">
+		<div class="center"></div>
+		<div id="left" class="left"></div>
+		<div id="right" class="right"></div>
+	</div>
+</div>
+<script type="text/javascript">
+var folding = {
+	init: function(){
+		var that = this,
+			doc = document;
+		that.open = true;//初始化的时候是打开状态
+		that.locked = false;//动作执行期间锁定，防止重复触发动作
+		that.duration = 800;//单页折叠动画时间
+		that.elem = doc.getElementById('box');
+		that.leftSide = doc.getElementById('left');
+		that.rightSide = doc.getElementById('right');
+		that.order = [];//执行动作的顺序
+	},
+	//关闭动作
+	closeAction:function(){
+		var that = this;
+		that.leftSide.classList.toggle('hover-left');
+		that.order.push(that.leftSide);
+		setTimeout(function(){
+			that.rightSide.classList.toggle('hover-right');
+			that.order.push(that.rightSide);
+		},that.duration);
+	},
+	//打开动作
+	openAction:function(){
+		var that = this;
+		if(that.order.length > 0){
+			that.order.pop().classList.toggle('hover-right');
+			setTimeout(function(){
+				that.order.pop().classList.toggle('hover-left');
+			},that.duration);
+		}
+	},
+	//绑定元素事件
+	bindEvent:function(){
+		var that = this;
+		that.elem.onclick = function(){
+			if(!that.locked){
+				that.locked = true;
+				if(that.open){
+					that.closeAction();
+				}
+				else{
+					that.openAction();
+				}
+				setTimeout(function(){
+					that.locked = false;
+				}, that.duration*2)
+			}
+		}
+	}
+}
+
+window.onload = function(){
+	folding.init();
+	folding.bindEvent();
+}
+</script>
+</body>
+</html>
