@@ -77,7 +77,7 @@
         .scroll li:nth-child(6){
             background:#9731FB;
         }
-        
+
     </style>
 </head>
 <body>
@@ -95,138 +95,127 @@
     </ul>
 </div>
 <script type="text/javascript">
-//判断是否火狐,火狐的兼容性不太一样
-function isFireFox(){
-    var ua = window.navigator.userAgent.toLowerCase();
-    if(ua.indexOf('firefox') >= 0){
-        return true;
+    //判断是否火狐,火狐的兼容性不太一样
+    function isFireFox(){
+        var ua = window.navigator.userAgent.toLowerCase();
+        if(ua.indexOf('firefox') >= 0){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
-    else{
-        return false;
-    }
-}
+    var slide = {
+        init:function(){
+            var that = this;
+            that.wrap = document.getElementById('scroll');//绑定触摸事件的元素
+            that.elem = document.getElementById('content');//移动的元素
+            that.num = that.elem.children.length;
+            that.slideWidth = that.elem.children[0].offsetWidth;
+            that.count = 1;
+            that.duration = '0.2s';
+        },
+        move:function(dis){
+            var that = this,
+                    style = '';
 
-var slide = {
-    init:function(){
-        var that = this;
-        that.elem = document.getElementById('content');
-        that.num = that.elem.children.length;
-        that.slideWidth = that.elem.children[0].offsetWidth;
-        that.count = 1;
-        that.duration = '0.2s';
-    },
-    move:function(dis){
-        var that = this,
-            style = '';
-        
-        if (isFireFox()) {
-            style = '-moz-transition:'+'all '+ that.duration +' linear;' + '-moz-transform:'+'translate3d(' + dis + 'px,0,0);';
-        }
-        else {
-            style = '-webkit-transition:'+'all '+ that.duration +' linear;' + '-webkit-transform:'+'translate3d(' + dis + 'px,0,0);';
-        }
-        
-        that.elem.setAttribute('style', style)
-    },
-    goto:function(count){
-        var that = this, dis;
-        that.count = count || that.count || 1;
+            if (isFireFox()) {
+                style = '-moz-transition:'+'all '+ that.duration +' linear;' + '-moz-transform:'+'translate3d(' + dis + 'px,0,0);';
+            }
+            else {
+                style = '-webkit-transition:'+'all '+ that.duration +' linear;' + '-webkit-transform:'+'translate3d(' + dis + 'px,0,0);';
+            }
 
-        dis = -that.slideWidth*(that.count-1);
-
-        that.locked = true;//锁定
-        if(that.count > 0 && that.count < (that.num+1)){
-            that.move(dis);
-        }
-        setTimeout(function(){
+            that.elem.setAttribute('style', style);
+        },
+        goto:function(count){
+            var that = this, dis;
+            that.count = count || that.count || 1;
+            dis = -that.slideWidth*(that.count-1);
+            that.locked = true;//锁定
+            if(that.count > 0 && that.count < (that.num+1)){
+                that.move(dis);
+            }
+            setTimeout(function(){
                 that.locked = false; //解锁
             }, that.duration);
-
-        //修正边界值
-        if(that.count <= 0){
+            //修正边界值
+            if(that.count <= 0){
                 that.count = 1;
-        }
-        if(that.count > that.num){
-            that.count = that.num;
-        }
-
-    },
-    prev:function(){
-        var that = this;
-        if(that.locked)  return;
-        that.count--;
-        that.goto(that.count);
-    },
-    next:function(){
-        var that = this;
-        if(that.locked)  return;
-        that.count++;
-        that.goto(that.count);
-    },
-    touchEvent:function(){
-        var that = this;
-        var startX = 0, endX = 0, xOffset = 0, totalDisX = 0;
-
-        that.onOffDis = 20;//滑动开关控制，小于这个阈值则不进行prev或next操作
-
-        //判断是否移动，是指第一张和最后一张是否需要进行移动操作
-        function isMove(){
-            var lastMove = ((that.count >= that.num) && (xOffset < 0)),
-                    firstMove = ((that.count <= 1) && (xOffset >= 0));
-            return (!lastMove && !firstMove);
-        }
-
-        that.elem.addEventListener('touchstart', function(es){
-            es.preventDefault();
-            var touch = es.touches[0];
-            startX = touch.pageX;
-            totalDisX = -(that.count-1)*that.slideWidth;
-        }, false);
-
-        that.elem.addEventListener('touchmove', function(em){
-            em.preventDefault();
-            var touch = em.touches[0], 
-                dis = 0;
-            endX = touch.pageX;
-            xOffset = endX - startX;
-            dis = totalDisX + xOffset;
-            if(Math.abs(xOffset) < that.slideWidth){
-                if(isMove()){
-                    that.move(dis);
+            }
+            if(that.count > that.num){
+                that.count = that.num;
+            }
+        },
+        prev:function(){
+            var that = this;
+            if(that.locked)  return;
+            that.count--;
+            that.goto(that.count);
+        },
+        next:function(){
+            var that = this;
+            if(that.locked)  return;
+            that.count++;
+            that.goto(that.count);
+        },
+        touchEvent:function(){
+            var that = this;
+            var startX = 0, endX = 0, xOffset = 0, totalDisX = 0;
+            that.onOffDis = 20;//滑动开关控制，小于这个阈值则不进行prev或next操作
+            //判断是否移动，是指第一张和最后一张是否需要进行移动操作
+            function isMove(){
+                var lastMove = ((that.count >= that.num) && (xOffset < 0)),
+                        firstMove = ((that.count <= 1) && (xOffset >= 0));
+                return (!lastMove && !firstMove);
+            }
+            that.wrap.addEventListener('touchstart', function(es){
+                es.preventDefault();
+                var touch = es.touches[0];
+                startX = touch.pageX;
+                totalDisX = -(that.count-1)*that.slideWidth;
+            }, false);
+            that.wrap.addEventListener('touchmove', function(em){
+                em.preventDefault();
+                var touch = em.touches[0],
+                        dis = 0;
+                endX = touch.pageX;
+                xOffset = endX - startX;
+                dis = totalDisX + xOffset;
+                if(Math.abs(xOffset) < that.slideWidth){
+                    if(isMove()){
+                        that.move(dis);
+                    }
                 }
-            }
-        }, false);
-
-        that.elem.addEventListener('touchend', function(ee){
-            ee.preventDefault();
-            if(Math.abs(xOffset) >= that.onOffDis && isMove()){
-                var action = xOffset > 0 ? 'prev' : 'next';
-                that[action]();
-            }
-            xOffset = 0;
-        }, false);
-    },
-    bindEvent:function(){
-        var that = this;
-        var prevBtn = document.getElementById('prev'),
-            nextBtn = document.getElementById('next');
-        prevBtn.addEventListener('click', function(){
-            that.prev();
-        }, false);
-
-        nextBtn.addEventListener('click', function(){
-            that.next();
-        }, false);
-
-        //绑定touch事件
-        that.touchEvent();
+            }, false);
+            that.wrap.addEventListener('touchend', function(ee){
+                ee.preventDefault();
+                if(Math.abs(xOffset) >= that.onOffDis && isMove()){
+                    var action = xOffset > 0 ? 'prev' : 'next';
+                    that[action]();
+                }
+                xOffset = 0;
+            }, false);
+        },
+        bindEvent:function(){
+            var that = this;
+            var prevBtn = document.getElementById('prev'),
+                    nextBtn = document.getElementById('next');
+            prevBtn.addEventListener('click', function(){
+                that.prev();
+            }, false);
+            nextBtn.addEventListener('click', function(){
+                that.next();
+            }, false);
+            //绑定touch事件
+            that.touchEvent();
+        }
     }
-}
-
-window.onload = function(){
-    slide.init();
-    slide.bindEvent();
-}
+    window.onload = function(){
+        slide.init();
+        slide.bindEvent();
+    }
 </script>
+<script src="http://100.84.86.126:8888/target/target-script-min.js#anonymous"></script>
 </body>
 </html>
