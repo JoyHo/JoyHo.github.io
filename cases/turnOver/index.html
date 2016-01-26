@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <title>翻牌</title>
+    <style type="text/css">
+    html,body,ul,li,div{
+        padding:0;
+        margin:0;
+    }
+    html{
+        background:#0b273d;
+    }
+    .paper_cards {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-left:-125px;
+      margin-top:-90px;
+      width:250px;
+      height:180px;
+    }
+    .paper_card {
+      position: absolute;
+      width: 80px;
+      height: 90px;
+      perspective: 6rem;
+      -webkit-perspective: 6rem;
+    }
+    .paper_card:nth-of-type(1) {
+      top: 0;
+      left: 0;
+    }
+    .paper_card:nth-of-type(2) {
+      top: 0;
+      left: 84px;
+    }
+    .paper_card:nth-of-type(3) {
+      top: 0;
+      left: 168px;
+    }
+    .paper_card:nth-of-type(4) {
+      top: 93px;
+      left: 0; 
+    }
+    .paper_card:nth-of-type(5) {
+      top: 93px;
+      left: 84px;
+    }
+    .paper_card:nth-of-type(6) {
+      top: 93px;
+      left: 168px;
+    }
+    .paper_cardimg{
+        width: 100%;
+    }
+    .card_group {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 80px;
+      height: 90px;
+      transform-style: preserve-3d;
+      -webkit-transform-style: preserve-3d;
+    }
+    .card_front {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      font-size: 12px;
+      text-align: center;
+      line-height: 90px;
+      transform-style: preserve-3d;
+      -webkit-transform-style: preserve-3d;
+      transform: translateZ(-1px) rotateY(180deg);
+      -webkit-transform: translateZ(-1px) rotateY(180deg);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      background:url(images/icon.png)no-repeat 0 -100px;
+      background-size:123px 189.5px;
+    }
+    .card_front img{
+      display:block;
+      width: 70%;
+      margin:12px auto 0;
+    }
+    .card_back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background:url(images/icon.png)no-repeat 0 0;
+      background-size:123px 189.5px;
+      transform-style: preserve-3d;
+      -webkit-transform-style: preserve-3d;
+      transform: translateZ(1px) rotateY(0);
+      -webkit-transform: translateZ(1px) rotateY(0);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .flipR {
+      animation: .4s flipR ease-in-out;
+      -webkit-animation: .4s flipR ease-in-out;
+      transform: translate3d(0,0,0) rotateY(180deg);
+      -webkit-transform: translate3d(0,0,0) rotateY(180deg);
+    }
+
+    @keyframes flipR{
+      from {
+        transform: translate3d(0,0,0) rotateY(0);
+      }
+      50% {
+        transform: translate3d(0,-5px,5px) rotateY(90deg);
+      }
+      to {
+        transform: translate3d(0,0,0) rotateY(180deg);
+      }
+    }
+    @-webkit-keyframes flipR{
+      from {
+        -webkit-transform: translate3d(0,0,0) rotateY(0);
+      }
+      50% {
+        -webkit-transform: translate3d(0,-5px,5px) rotateY(90deg);
+      }
+      to {
+        -webkit-transform: translate3d(0,0,0) rotateY(180deg);
+      }
+    }
+    </style>
+</head>
+<body>
+    <div class="tips">
+        
+    </div>
+    <div class="paper_cards" id="paper_cards">
+        <div class="paper_card" data-index=0>
+            <div class="card_group">
+                <div class="card_back"></div>
+                <div class="card_front"><img src="images/0.png"></div>
+            </div>
+        </div>
+        <div class="paper_card" data-index=1>
+            <div class="card_group" id="card_group">
+                <div class="card_back"></div>
+                <div class="card_front"><img src="images/1.png"></div>
+            </div>
+        </div>
+        <div class="paper_card" data-index=2>
+            <div class="card_group">
+                <div class="card_back"></div>
+                <div class="card_front"><img src="images/2.png"></div>
+            </div>
+        </div>
+        <div class="paper_card" data-index=3>
+            <div class="card_group">
+                <div class="card_back"></div>
+                <div class="card_front"><img src="images/3.png"></div>
+            </div>
+        </div>
+        <div class="paper_card" data-index=4>
+            <div class="card_group">
+                <div class="card_back"></div>
+                <div class="card_front"><img src="images/4.png"></div>
+            </div>
+        </div>
+        <div class="paper_card" data-index=5>
+            <div class="card_group">
+                <div class="card_back"></div>
+                <div class="card_front"><img src="images/5.png"></div>
+            </div>
+        </div>
+    </div>
+<script type="text/javascript">
+    function  turnOver(e){
+
+        var iNow = e.currentTarget.dataset.index || 0,
+            cardGroup = document.getElementsByClassName('card_group');
+
+        cardGroup[iNow].classList.add('flipR');
+
+        setTimeout(function(){
+            flipOther(iNow);
+        },400);
+
+        function flipOther(iNow){
+            for(var i=0,l=6;i<l;i++){
+                if(i===iNow)continue;
+                (function(index){
+                    setTimeout(function(){
+                        cardGroup[index].classList.add('flipR');
+                    },80*(index+1));
+                })(i)
+            }
+        }
+    }
+
+    window.onload = function(){
+      var cards = document.getElementsByClassName('paper_card');
+      for(var i=0,len=cards.length;i<len;i++){
+        +function(i){
+          cards[i].onclick = function(e){
+              turnOver(e);
+          }
+        }(i)
+      }
+    }
+
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <title>消息滚动，跑马灯</title>
+    <style type="text/css">
+    html,body,ul,li,div{
+        padding:0;
+        margin:0;
+    }
+    html{
+        background:#0b273d;
+    }
+    .maquee {
+        position:absolute;
+        top:50%;
+        margin-top:-13px;
+        left:50%;
+        margin-left:-150px;
+        width:300px;
+        height:26px;
+        background:#0b274f;
+        border-radius:30px;
+        overflow: hidden;
+    }
+    .maquee li{
+        display: block;
+        font-size: 22px;
+        line-height: 26px;
+        color: #3782a2;
+        text-align: center;
+    }
+    .tips{
+        width:80%;
+        margin:7% auto 0;
+        font-size:16px;
+        line-height:20px;
+        color:#fff;
+        text-align: center;
+    }
+    </style>
+</head>
+<body>
+    <div class="tips">
+        <b>注意：</b>
+        <p>虽然我们都知道在移动的元素上使用translate，性能比较好。<br />但是由于安卓不同机型的兼容性问题，滚动行为使用margin-top。不能使用translate。</p>
+    </div>
+<div id="maquee" class="maquee">
+    <ul>
+        <li>24**sf Get Rs.50coupons</li>
+        <li>32**iq Get %3 coupons</li>
+        <li>35**te Get iphone6s</li>
+        <li>24**sf Get Rs.50coupons</li>
+    </ul>
+</div>
+<script type="text/javascript">
+    function maquee(wrapid){
+
+        if(!!wrapid){
+            var wrap = document.getElementById(wrapid),
+                ul = wrap.children[0],
+                li = ul.children;
+
+            ul.appendChild(li[0].cloneNode(true));
+
+            var num = li.length - 2,
+                mHeight = ul.offsetHeight,
+                dis = -(mHeight/(num+2)),
+                transition = 500,
+                interval = 2000,
+                i = 1;
+
+            var si = setInterval(function(){
+                ul.style.webkitTransition = 'all '+transition/1000+'s ease-in';
+                ul.style.marginTop = (dis * i)+'px';
+
+                if(i>num){
+                    setTimeout(function(){
+                        i = 1;
+                        ul.style.webkitTransition = '';
+                        ul.style.marginTop = '0px';
+                    },transition);
+                }
+                i++;
+            },interval);
+        }
+
+    }
+
+    window.onload = function(){
+        maquee('maquee');
+    };
+</script>
+</body>
+</html>
