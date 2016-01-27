@@ -78,11 +78,22 @@
         .scroll li:nth-child(6){
             background:#9731FB;
         }
-
+        .tips{
+            width:80%;
+            margin:2% auto 0;
+            font-size:16px;
+            line-height:20px;
+            color:#888;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 <h1>滑动轮播</h1>
+<div class="tips">
+<b>注意：</b>
+<p>触发触摸事件的元素不能是移动的元素，因为安卓和IOS有不同的表现。在IOS上，触摸移动异常。<br />所以呢，touch事件应该要作用在最外层元素上。</p>
+</div>
 <div id="scroll" class="scroll">
     <a  id="prev" class="left">&lt;</a>
     <a id="next" class="right">&gt;</a>
