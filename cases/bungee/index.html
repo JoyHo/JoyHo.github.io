@@ -1,0 +1,187 @@
+<html>
+<head>
+	<title>橡皮筋跳动</title>
+	<style type="text/css">
+		.txt{	
+			margin-top:50px;
+			font-size:20px;
+			color:#000;
+			text-align: center;
+		}
+		canvas{
+			position:absolute;
+			left:50%;
+			margin-left:-350px;
+			top:50%;
+			margin-top:-150px;
+		}
+	</style>
+</head>
+<body>
+	<div class="txt">
+		<p>使用canvas实现，涉及到贝塞尔曲线、圆角矩形、擦除、画圆、画线的基本知识。</p>
+		<p>如果是更复杂的动画，建议使用轻量级的canvas引擎，使得开发更加方便。</p>
+	</div>
+<canvas id="canvas" width="700px" height="700px"></canvas>
+<script type="text/javascript">
+
+	function Draw(ctx){
+		this.ctx = ctx;
+	}
+	/**
+	* y是贝塞尔曲线控制点y坐标，用来控制橡皮筋的弧度
+	*/
+	Draw.prototype.drawLine = function(y){
+		var ctx = this.ctx;
+		ctx.clearRect(0,0,700,700);
+		var y = y || 0;
+	  	ctx.strokeStyle = "#000"; 
+	  	ctx.beginPath();  
+	  	ctx.moveTo(0,200);  
+	  	ctx.quadraticCurveTo(350,y,700,200);  
+	  	ctx.stroke(); 
+	}
+	/**
+	* 坐标x,y
+	* 尺寸w,h
+	* 半径r
+	* 小人状态step:0||1
+	*/
+	Draw.prototype.drawPeople = function(x,y,w,h,r,step){
+		var ctx = this.ctx;
+		var step = step || 0;//小人状态
+		ctx.beginPath();
+		ctx.strokeStyle = "#ff6600"; 
+		//画身体，圆角矩形
+		ctx.moveTo(x+r, y);
+		ctx.arcTo(x+w, y, x+w, y+h, r);
+		ctx.arcTo(x+w, y+h, x, y+h, r);
+		ctx.arcTo(x, y+h, x, y, r);
+		ctx.arcTo(x, y, x+w, y, r);
+		ctx.closePath();
+		ctx.stroke();
+
+		//画眼睛，实心圆形
+		//左眼睛
+		ctx.beginPath();
+		ctx.arc(x+16,y+20,5,0,Math.PI*2,false);
+		ctx.closePath();
+		ctx.fillStyle = "#000";
+		ctx.strokeStyle = "#000";
+		ctx.fill();
+
+		//右眼睛
+		ctx.beginPath();
+		ctx.arc(x+50,y+20,5,0,Math.PI*2,false);
+		ctx.closePath();
+		ctx.fillStyle = "#000";
+		ctx.strokeStyle = "#000";
+		ctx.fill();
+
+		//画嘴巴，半圆
+		ctx.beginPath();
+		ctx.arc(x+33,y+41,15,0,-Math.PI,false);
+		ctx.closePath();
+		ctx.fillStyle = "#000";
+		ctx.strokeStyle = "#000";
+		ctx.fill();
+
+		//画手
+		var handAngle = {};
+		switch(step){
+			case 0:
+			default:
+				handAngle = {
+					left:{
+						sx: x,
+						ex: x-23,
+						sy: y+31,
+						ey: y+11
+					},
+					right:{
+						sx: x+66,
+						ex: x+89,
+						sy: y+31,
+						ey: y+11
+					}
+				};
+				break;
+			case 1:
+				handAngle = {
+					left:{
+						sx: x,
+						ex: x-18,
+						sy: y+31,
+						ey: y+1
+					},
+					right:{
+						sx: x+66,
+						ex: x+79,
+						sy: y+31,
+						ey: y+1
+					}
+				};
+				break;
+		} 
+		//左手
+		ctx.beginPath();
+		ctx.moveTo(handAngle.left.sx,handAngle.left.sy);
+		ctx.lineTo(handAngle.left.ex,handAngle.left.ey); 
+		ctx.closePath();
+		ctx.strokeStyle = "#000";
+		ctx.stroke();
+
+		//右手
+		ctx.beginPath();
+		ctx.moveTo(handAngle.right.sx,handAngle.right.sy);
+		ctx.lineTo(handAngle.right.ex,handAngle.right.ey);
+		ctx.closePath();
+		ctx.strokeStyle = "#000";
+		ctx.stroke();
+		
+	}
+
+	var action = {
+		lineAction: function(){
+			var i=0;
+			var si = setInterval(function(){
+				//阶段1，11帧
+				if(i<11){
+					draw.drawLine(500/11*i+200,ctx);
+					draw.drawPeople(333,500/11*i,66,66,16,1);
+				}
+				//阶段2，12-18帧
+				else if(i<18){
+					draw.drawLine(300-(i-10)*60,ctx);
+					draw.drawPeople(333,300-(i-10)*60,66,66,16,0);
+				}
+				else if(i<21){
+					draw.drawLine(50,ctx);
+				}
+				else if(i<22){
+					draw.drawLine(100,ctx);
+				}
+				i++;
+
+				//循环动画
+				if(i>50){
+					i=0;
+				}
+
+			},38);
+		}
+	}
+
+
+
+	var canvas = document.getElementById('canvas');
+	var ctx = canvas.getContext("2d");
+	var draw = new Draw(ctx);
+	action.lineAction();
+ 
+
+
+
+</script>
+</body>
+</html>
