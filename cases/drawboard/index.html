@@ -1,0 +1,115 @@
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+		body{
+			padding:0;
+			margin:0;
+			background:#eee;
+		}
+		canvas{
+			position:absolute;
+			top:50%;
+			left:50%;
+			margin-top:-150px;
+			margin-left:-300px;
+		}
+		.text{
+			text-align:center;
+			font-size:16px;
+			line-height:20px;
+			color:#000;
+		}
+		.ff{
+			margin-top:70px;	
+		}
+	</style>
+</head>
+<body>
+<p class="text ff">demo画板</p>
+<p class="text">在下面黑色的区域用鼠标画画</p>
+<canvas id="canvas" width="600" height="300"></canvas>
+<script type="text/javascript">
+var Canvas = function(){
+	this.canvas = document.getElementById("canvas");
+	this.ctx = this.canvas.getContext("2d");
+	this.onoff = false;//开关
+	this.oldx = 0;//原始位置
+	this.oldy = 0;//原始位置
+	this.linecolor = 'white';//线条颜色
+	this.linw = 4;//线条宽度
+	this.lineCap = "round";
+
+	this.init();
+}
+/**
+* 初始化
+*/
+Canvas.prototype.init = function(){
+	var that = this;
+	this.ctx.fillStyle = "black";
+	this.ctx.fillRect(0,0,600,300);
+	this.canvas.addEventListener('mousedown',function(e){
+		that.down(e,that);
+	},false);
+
+	this.canvas.addEventListener('mousemove',function(e){
+		that.draw(e,that);
+	},false);
+
+	this.canvas.addEventListener('mouseup',function(e){
+		that.up(e,that);
+	},false);
+}
+
+Canvas.prototype.getXY = function(v,direction,that){
+	var value = v || 0,
+		direction = direction || 'x',
+		newV = 0,
+		originX = that.canvas.offsetLeft,
+		originY = that.canvas.offsetTop;
+	switch(direction){
+		case 'x':
+			newV = v-originX;
+			break;
+		case 'y':
+			newV = v-originY;
+			break;
+		default:
+			newV = v-originX;
+			break;
+	}
+	return newV;
+}
+
+Canvas.prototype.down = function(e,that){
+	that.onoff = true;
+	oldx = that.getXY(e.pageX-10,'x',that);
+	oldy = that.getXY(e.pageY-10,'y',that);
+}
+
+Canvas.prototype.up = function(e,that){
+	that.onoff = false;
+}
+
+Canvas.prototype.draw = function(e,that){
+	if(that.onoff == true){
+		var newx = that.getXY(e.pageX-10,'x',that);
+		var newy = that.getXY(e.pageY-10,'y',that);
+		that.ctx.moveTo(oldx,oldy);
+		that.ctx.lineTo(newx,newy);
+		that.ctx.strokeStyle = that.linecolor;
+		that.ctx.lineWidth = that.linw;
+		that.ctx.lineCap = that.lineCap;
+		that.ctx.stroke();
+
+		oldx = newx;
+		oldy = newy;
+	}
+}
+
+//执行
+var action = new Canvas();
+</script>
+</body>
+</html>
